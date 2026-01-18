@@ -5,6 +5,7 @@ import { config } from '../config/env.js';
 import { sendToWebhook } from '../services/webhook.js';
 import { logger } from '../utils/logger.js';
 import { pauseContact, getPauseDurationHours } from '../database/pausedContacts.js';
+import { markApiSending, isApiSending } from '../utils/apiSendTracker.js';
 
 // WhatsApp connection states
 export const WA_STATUS = {
@@ -18,30 +19,6 @@ export const WA_STATUS = {
 let currentStatus = WA_STATUS.DISCONNECTED;
 let qrCodeDataUrl = null;
 let lastError = null;
-
-// Track chats where API is sending (to distinguish from manual phone messages)
-const apiSendingToChats = new Map(); // chatId -> timestamp
-const API_SEND_WINDOW_MS = 10000; // 10 seconds window
-
-function markApiSending(chatId) {
-  apiSendingToChats.set(chatId, Date.now());
-  // Auto-cleanup after 10 seconds
-  setTimeout(() => {
-    apiSendingToChats.delete(chatId);
-  }, API_SEND_WINDOW_MS);
-}
-
-function isApiSending(chatId) {
-  const timestamp = apiSendingToChats.get(chatId);
-  if (!timestamp) return false;
-
-  // Check if within the time window
-  if (Date.now() - timestamp < API_SEND_WINDOW_MS) {
-    apiSendingToChats.delete(chatId); // Consume the flag
-    return true;
-  }
-  return false;
-}
 
 // Initialize WhatsApp client
 const client = new Client({

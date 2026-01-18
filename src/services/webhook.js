@@ -2,6 +2,28 @@ import axios from 'axios';
 import { config } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 import { isContactPaused } from '../database/pausedContacts.js';
+import { getSetting, SETTINGS_DEFAULTS } from '../database/settings.js';
+import { canSendAutoReply, recordAutoReply } from '../database/autoReply.js';
+import { markApiSending } from '../utils/apiSendTracker.js';
+
+// Check if webhook is enabled
+function isWebhookEnabled() {
+  const value = getSetting('WEBHOOK_ENABLED');
+  if (value === null) return SETTINGS_DEFAULTS.WEBHOOK_ENABLED;
+  return value === 'true' || value === '1';
+}
+
+// Check if auto-reply is enabled
+function isAutoReplyEnabled() {
+  const value = getSetting('AUTO_REPLY_ENABLED');
+  if (value === null) return SETTINGS_DEFAULTS.AUTO_REPLY_ENABLED;
+  return value === 'true' || value === '1';
+}
+
+// Get auto-reply message
+function getAutoReplyMessage() {
+  return getSetting('AUTO_REPLY_MESSAGE') || SETTINGS_DEFAULTS.AUTO_REPLY_MESSAGE;
+}
 
 // Send message to webhook
 export async function sendToWebhook(msg, client) {
@@ -10,6 +32,15 @@ export async function sendToWebhook(msg, client) {
     const chatId = msg.from;
     if (isContactPaused(chatId)) {
       logger.log('Webhook', `Skipping - contact ${chatId} is paused (manual takeover)`);
+      return;
+    }
+
+    // Handle auto-reply if enabled
+    await handleAutoReply(msg, client);
+
+    // Check if webhook is enabled
+    if (!isWebhookEnabled()) {
+      logger.log('Webhook', `Webhook disabled - skipping for ${chatId}`);
       return;
     }
 
@@ -102,4 +133,44 @@ async function sendWebhookRequest(payload, retries = 3) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Handle auto-reply logic
+async function handleAutoReply(msg, client) {
+  try {
+    // Skip if auto-reply is disabled
+    if (!isAutoReplyEnabled()) {
+      return;
+    }
+
+    // Skip groups
+    if (msg.from.endsWith('@g.us')) {
+      return;
+    }
+
+    const chatId = msg.from;
+    const autoReplyMessage = getAutoReplyMessage();
+
+    // Skip if no message configured
+    if (!autoReplyMessage) {
+      return;
+    }
+
+    // Check if we can send auto-reply (12h cooldown)
+    if (!canSendAutoReply(chatId)) {
+      logger.log('AutoReply', `Cooldown active for ${chatId} - skipping`);
+      return;
+    }
+
+    // Mark as API sending to prevent pause trigger
+    markApiSending(chatId);
+
+    // Send auto-reply
+    await client.sendMessage(chatId, autoReplyMessage);
+    recordAutoReply(chatId);
+
+    logger.log('AutoReply', `Sent auto-reply to ${chatId}`);
+  } catch (err) {
+    logger.error('AutoReply', `Error sending auto-reply: ${err.message}`);
+  }
 }

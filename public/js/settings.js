@@ -74,6 +74,9 @@
         document.getElementById('WEBHOOK_TOKEN').value = data.settings.WEBHOOK_TOKEN || '';
         document.getElementById('API_TOKEN').value = data.settings.API_TOKEN || '';
         document.getElementById('PAUSE_DURATION_HOURS').value = data.settings.PAUSE_DURATION_HOURS || 4;
+        document.getElementById('WEBHOOK_ENABLED').checked = data.settings.WEBHOOK_ENABLED !== false;
+        document.getElementById('AUTO_REPLY_ENABLED').checked = data.settings.AUTO_REPLY_ENABLED === true;
+        document.getElementById('AUTO_REPLY_MESSAGE').value = data.settings.AUTO_REPLY_MESSAGE || '';
       }
     } catch (err) {
       console.error('Error loading settings:', err);
@@ -91,6 +94,11 @@
     for (const [key, value] of formData.entries()) {
       settings[key] = value;
     }
+
+    // Handle checkboxes (they're not included when unchecked)
+    settings.WEBHOOK_ENABLED = document.getElementById('WEBHOOK_ENABLED').checked;
+    settings.AUTO_REPLY_ENABLED = document.getElementById('AUTO_REPLY_ENABLED').checked;
+    settings.AUTO_REPLY_MESSAGE = document.getElementById('AUTO_REPLY_MESSAGE').value;
 
     try {
       const response = await fetch('/dashboard/settings', {

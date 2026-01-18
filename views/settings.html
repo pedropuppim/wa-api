@@ -42,6 +42,14 @@
             <legend>Webhook</legend>
 
             <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="WEBHOOK_ENABLED" name="WEBHOOK_ENABLED">
+                <span>Webhook Habilitado</span>
+              </label>
+              <small>Quando desabilitado, mensagens recebidas nao serao enviadas ao webhook</small>
+            </div>
+
+            <div class="form-group">
               <label for="WEBHOOK_URL">URL do Webhook</label>
               <input type="url" id="WEBHOOK_URL" name="WEBHOOK_URL" placeholder="https://seu-servidor.com/webhook">
             </div>
@@ -55,6 +63,24 @@
                 </button>
               </div>
               <small>Deixe em branco para manter o token atual</small>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Resposta Automatica</legend>
+
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="AUTO_REPLY_ENABLED" name="AUTO_REPLY_ENABLED">
+                <span>Resposta Automatica Habilitada</span>
+              </label>
+              <small>Envia uma mensagem automatica para novos contatos (1x a cada 12 horas)</small>
+            </div>
+
+            <div class="form-group">
+              <label for="AUTO_REPLY_MESSAGE">Mensagem Automatica</label>
+              <textarea id="AUTO_REPLY_MESSAGE" name="AUTO_REPLY_MESSAGE" rows="4" placeholder="Ola! Recebemos sua mensagem e em breve retornaremos."></textarea>
+              <small>Mensagem enviada automaticamente quando alguem entra em contato</small>
             </div>
           </fieldset>
 

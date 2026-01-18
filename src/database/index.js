@@ -30,4 +30,13 @@ db.exec(`
   )
 `);
 
+// Create auto_reply_log table (for tracking auto-replies sent)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS auto_reply_log (
+    chat_id TEXT PRIMARY KEY,
+    last_reply_at INTEGER NOT NULL,
+    message_count INTEGER DEFAULT 1
+  )
+`);
+
 export default db;
