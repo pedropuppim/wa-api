@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - WhatsApp API</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>WhatsApp API</h1>
+      <div class="header-actions">
+        <a href="/settings" class="btn btn-secondary">Configuracoes</a>
+        <button id="logoutBtn" class="btn btn-secondary">Sair</button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <div class="card status-card">
+        <h2>Status da Conexao</h2>
+
+        <div class="status-indicator">
+          <span id="statusDot" class="status-dot"></span>
+          <span id="statusText">Carregando...</span>
+        </div>
+
+        <div id="errorMessage" class="error" style="display: none;"></div>
+
+        <div id="qrContainer" class="qr-container" style="display: none;">
+          <p>Escaneie o QR Code com o WhatsApp:</p>
+          <img id="qrCode" src="" alt="QR Code">
+        </div>
+
+        <div id="connectedMessage" class="success-message" style="display: none;">
+          <p>WhatsApp conectado e pronto para uso!</p>
+        </div>
+
+        <div class="actions">
+          <button id="regenerateQrBtn" class="btn btn-primary">Gerar Novo QR Code</button>
+          <button id="restartBtn" class="btn btn-warning">Reiniciar Sessao</button>
+        </div>
+      </div>
+
+      <div class="card info-card">
+        <h2>Informacoes da API</h2>
+
+        <div class="info-item">
+          <strong>Endpoint de Status:</strong>
+          <code>GET /api/status</code>
+        </div>
+
+        <div class="info-item">
+          <strong>Endpoint de Envio:</strong>
+          <code>POST /api/send</code>
+        </div>
+
+        <div class="info-item">
+          <strong>Autenticacao:</strong>
+          <code>Authorization: Bearer &lt;API_TOKEN&gt;</code>
+        </div>
+
+        <div class="info-item">
+          <strong>Exemplo de Payload (Texto):</strong>
+          <pre class="code-block">{
+  "to": "5511999999999",
+  "type": "text",
+  "text": "Ola, tudo bem?"
+}</pre>
+        </div>
+
+        <div class="info-item">
+          <strong>Exemplo de Payload (Imagem via URL):</strong>
+          <pre class="code-block">{
+  "to": "5511999999999",
+  "type": "image",
+  "caption": "Legenda opcional",
+  "image": {
+    "source": "url",
+    "url": "https://exemplo.com/imagem.jpg"
+  }
+}</pre>
+        </div>
+
+        <div class="info-item">
+          <strong>Exemplo de Payload (Audio):</strong>
+          <pre class="code-block">{
+  "to": "5511999999999",
+  "type": "audio",
+  "audio": {
+    "source": "url",
+    "url": "https://exemplo.com/audio.mp3"
+  },
+  "asPtt": true
+}</pre>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

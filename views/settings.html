@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuracoes - WhatsApp API</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>WhatsApp API</h1>
+      <div class="header-actions">
+        <a href="/" class="btn btn-secondary">Voltar</a>
+        <button id="logoutBtn" class="btn btn-secondary">Sair</button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <div class="card">
+        <h2>Configuracoes</h2>
+
+        <div id="message" class="message" style="display: none;"></div>
+
+        <form id="settingsForm" class="settings-form">
+          <fieldset>
+            <legend>Autenticacao do Dashboard</legend>
+
+            <div class="form-group">
+              <label for="DASH_USER">Usuario</label>
+              <input type="text" id="DASH_USER" name="DASH_USER" autocomplete="username">
+            </div>
+
+            <div class="form-group">
+              <label for="DASH_PASS">Senha</label>
+              <input type="password" id="DASH_PASS" name="DASH_PASS" autocomplete="new-password">
+              <small>Deixe em branco para manter a senha atual</small>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Webhook</legend>
+
+            <div class="form-group">
+              <label for="WEBHOOK_URL">URL do Webhook</label>
+              <input type="url" id="WEBHOOK_URL" name="WEBHOOK_URL" placeholder="https://seu-servidor.com/webhook">
+            </div>
+
+            <div class="form-group">
+              <label for="WEBHOOK_TOKEN">Token do Webhook</label>
+              <div class="input-with-action">
+                <input type="password" id="WEBHOOK_TOKEN" name="WEBHOOK_TOKEN" autocomplete="off">
+                <button type="button" class="btn-icon btn-copy" data-target="WEBHOOK_TOKEN" title="Mostrar/Copiar">
+                  <span class="icon-copy">&#128203;</span>
+                </button>
+              </div>
+              <small>Deixe em branco para manter o token atual</small>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>API</legend>
+
+            <div class="form-group">
+              <label for="API_TOKEN">Token da API</label>
+              <div class="input-with-action">
+                <input type="password" id="API_TOKEN" name="API_TOKEN" autocomplete="off">
+                <button type="button" class="btn-icon btn-copy" data-target="API_TOKEN" title="Mostrar/Copiar">
+                  <span class="icon-copy">&#128203;</span>
+                </button>
+              </div>
+              <small>Deixe em branco para manter o token atual</small>
+            </div>
+          </fieldset>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Salvar Configuracoes</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/settings.js"></script>
+</body>
+</html>
