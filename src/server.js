@@ -16,6 +16,7 @@ import authRoutes from './routes/auth.js';
 import statusRoutes from './routes/status.js';
 import sendRoutes from './routes/send.js';
 import settingsRoutes from './routes/settings.js';
+import pausedContactsRoutes from './routes/pausedContacts.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -83,6 +84,7 @@ app.use(webRoutes);
 app.use(statusRoutes);
 app.use(sendRoutes);
 app.use(settingsRoutes);
+app.use(pausedContactsRoutes);
 
 // Restart WhatsApp endpoint (dashboard only)
 app.post('/dashboard/restart', requireAuth, async (req, res) => {
