@@ -73,6 +73,7 @@
         document.getElementById('WEBHOOK_URL').value = data.settings.WEBHOOK_URL || '';
         document.getElementById('WEBHOOK_TOKEN').value = data.settings.WEBHOOK_TOKEN || '';
         document.getElementById('API_TOKEN').value = data.settings.API_TOKEN || '';
+        document.getElementById('PAUSE_DURATION_HOURS').value = data.settings.PAUSE_DURATION_HOURS || 4;
       }
     } catch (err) {
       console.error('Error loading settings:', err);

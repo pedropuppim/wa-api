@@ -1,11 +1,22 @@
 import db from './index.js';
+import { getSetting, SETTINGS_DEFAULTS } from './settings.js';
 
-const PAUSE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+const DEFAULT_PAUSE_HOURS = SETTINGS_DEFAULTS.PAUSE_DURATION_HOURS;
+
+// Get pause duration in hours
+export function getPauseDurationHours() {
+  return parseInt(getSetting('PAUSE_DURATION_HOURS')) || DEFAULT_PAUSE_HOURS;
+}
+
+// Get pause duration in milliseconds
+function getPauseDurationMs() {
+  return getPauseDurationHours() * 60 * 60 * 1000;
+}
 
 // Pause webhook for a contact
 export function pauseContact(chatId) {
   const now = Date.now();
-  const expiresAt = now + PAUSE_DURATION_MS;
+  const expiresAt = now + getPauseDurationMs();
 
   const stmt = db.prepare(`
     INSERT INTO paused_contacts (chat_id, paused_at, expires_at)

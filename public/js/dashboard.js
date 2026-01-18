@@ -11,6 +11,10 @@
   const regenerateQrBtn = document.getElementById('regenerateQrBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const pausedList = document.getElementById('pausedList');
+  const pausedBtn = document.getElementById('pausedBtn');
+  const pausedCount = document.getElementById('pausedCount');
+  const pausedModal = document.getElementById('pausedModal');
+  const closeModalBtn = document.getElementById('closeModalBtn');
 
   const STATUS_LABELS = {
     DISCONNECTED: 'Desconectado',
@@ -181,9 +185,32 @@
 
       const data = await response.json();
       renderPausedContacts(data.contacts);
+      updatePausedBadge(data.contacts.length);
     } catch (err) {
       console.error('Error fetching paused contacts:', err);
     }
+  }
+
+  // Update badge count
+  function updatePausedBadge(count) {
+    if (count > 0) {
+      pausedCount.textContent = count;
+      pausedCount.classList.remove('hidden');
+    } else {
+      pausedCount.textContent = '0';
+      pausedCount.classList.add('hidden');
+    }
+  }
+
+  // Open modal
+  function openPausedModal() {
+    fetchPausedContacts();
+    pausedModal.style.display = 'flex';
+  }
+
+  // Close modal
+  function closePausedModal() {
+    pausedModal.style.display = 'none';
   }
 
   // Render paused contacts list
@@ -316,14 +343,30 @@
     restartBtn.addEventListener('click', restartSession);
     regenerateQrBtn.addEventListener('click', regenerateQr);
     logoutBtn.addEventListener('click', logout);
+    pausedBtn.addEventListener('click', openPausedModal);
+    closeModalBtn.addEventListener('click', closePausedModal);
+
+    // Close modal when clicking outside
+    pausedModal.addEventListener('click', (e) => {
+      if (e.target === pausedModal) {
+        closePausedModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && pausedModal.style.display === 'flex') {
+        closePausedModal();
+      }
+    });
 
     // Initial fetch
     fetchStatus();
     fetchPausedContacts();
 
-    // Start polling every 3 seconds for status, every 10 seconds for paused contacts
+    // Start polling every 3 seconds for status, every 30 seconds for paused contacts count
     pollInterval = setInterval(fetchStatus, 3000);
-    setInterval(fetchPausedContacts, 10000);
+    setInterval(fetchPausedContacts, 30000);
   }
 
   // Cleanup on page unload

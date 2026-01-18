@@ -7,6 +7,12 @@ export const SETTINGS_KEYS = {
   WEBHOOK_URL: 'WEBHOOK_URL',
   WEBHOOK_TOKEN: 'WEBHOOK_TOKEN',
   API_TOKEN: 'API_TOKEN',
+  PAUSE_DURATION_HOURS: 'PAUSE_DURATION_HOURS',
+};
+
+// Default values
+export const SETTINGS_DEFAULTS = {
+  PAUSE_DURATION_HOURS: 4,
 };
 
 // Get a setting value

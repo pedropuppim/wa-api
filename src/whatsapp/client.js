@@ -4,7 +4,7 @@ import qrcode from 'qrcode';
 import { config } from '../config/env.js';
 import { sendToWebhook } from '../services/webhook.js';
 import { logger } from '../utils/logger.js';
-import { pauseContact } from '../database/pausedContacts.js';
+import { pauseContact, getPauseDurationHours } from '../database/pausedContacts.js';
 
 // WhatsApp connection states
 export const WA_STATUS = {
@@ -18,6 +18,30 @@ export const WA_STATUS = {
 let currentStatus = WA_STATUS.DISCONNECTED;
 let qrCodeDataUrl = null;
 let lastError = null;
+
+// Track chats where API is sending (to distinguish from manual phone messages)
+const apiSendingToChats = new Map(); // chatId -> timestamp
+const API_SEND_WINDOW_MS = 10000; // 10 seconds window
+
+function markApiSending(chatId) {
+  apiSendingToChats.set(chatId, Date.now());
+  // Auto-cleanup after 10 seconds
+  setTimeout(() => {
+    apiSendingToChats.delete(chatId);
+  }, API_SEND_WINDOW_MS);
+}
+
+function isApiSending(chatId) {
+  const timestamp = apiSendingToChats.get(chatId);
+  if (!timestamp) return false;
+
+  // Check if within the time window
+  if (Date.now() - timestamp < API_SEND_WINDOW_MS) {
+    apiSendingToChats.delete(chatId); // Consume the flag
+    return true;
+  }
+  return false;
+}
 
 // Initialize WhatsApp client
 const client = new Client({
@@ -92,12 +116,23 @@ client.on('message', async (msg) => {
 
 // Event: Message created (sent from phone or API)
 client.on('message_create', async (msg) => {
-  // Only handle messages sent from the phone (not from API)
-  if (msg.fromMe && msg.id.fromMe) {
-    const chatId = msg.to;
-    logger.log('WhatsApp', `Manual message sent to ${chatId} - pausing webhook for 24h`);
-    pauseContact(chatId);
+  // Only handle messages sent by us
+  if (!msg.fromMe || !msg.id.fromMe) {
+    return;
   }
+
+  const chatId = msg.to;
+
+  // Check if this message was sent via our API
+  if (isApiSending(chatId)) {
+    logger.log('WhatsApp', `API message sent to ${chatId} - not pausing`);
+    return;
+  }
+
+  // Message was sent manually from phone - pause webhook
+  const pauseHours = getPauseDurationHours();
+  logger.log('WhatsApp', `Manual message sent to ${chatId} - pausing webhook for ${pauseHours}h`);
+  pauseContact(chatId);
 });
 
 // Initialize client
@@ -206,6 +241,7 @@ function extractMessageId(result) {
 // Send text message
 export async function sendTextMessage(to, text) {
   const chatId = await validateNumber(to);
+  markApiSending(chatId); // Mark BEFORE sending
   const result = await client.sendMessage(chatId, text);
   return {
     id: extractMessageId(result),
@@ -225,6 +261,7 @@ export async function sendImageMessage(to, imageData, caption) {
     media = new MessageMedia(imageData.mimetype, imageData.data, imageData.filename);
   }
 
+  markApiSending(chatId); // Mark BEFORE sending
   const result = await client.sendMessage(chatId, media, { caption });
   return {
     id: extractMessageId(result),
@@ -244,6 +281,7 @@ export async function sendAudioMessage(to, audioData, asPtt = true) {
     media = new MessageMedia(audioData.mimetype, audioData.data, audioData.filename);
   }
 
+  markApiSending(chatId); // Mark BEFORE sending
   const result = await client.sendMessage(chatId, media, { sendAudioAsVoice: asPtt });
   return {
     id: extractMessageId(result),

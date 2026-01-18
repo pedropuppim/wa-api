@@ -11,6 +11,7 @@
     <header class="header">
       <h1>WhatsApp API</h1>
       <div class="header-actions">
+        <button id="pausedBtn" class="btn btn-secondary">Conversas Pausadas <span id="pausedCount" class="badge">0</span></button>
         <a href="/settings" class="btn btn-secondary">Configuracoes</a>
         <button id="logoutBtn" class="btn btn-secondary">Sair</button>
       </div>
@@ -39,15 +40,6 @@
         <div class="actions">
           <button id="regenerateQrBtn" class="btn btn-primary">Gerar Novo QR Code</button>
           <button id="restartBtn" class="btn btn-warning">Reiniciar Sessao</button>
-        </div>
-      </div>
-
-      <div class="card paused-card">
-        <h2>Conversas Pausadas</h2>
-        <p class="subtitle-small">Webhook desativado temporariamente (atendimento manual)</p>
-
-        <div id="pausedList" class="paused-list">
-          <p class="empty-message">Nenhuma conversa pausada</p>
         </div>
       </div>
 
@@ -105,6 +97,20 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- Modal Conversas Pausadas -->
+  <div id="pausedModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Conversas Pausadas</h2>
+        <button id="closeModalBtn" class="btn-close">&times;</button>
+      </div>
+      <p class="subtitle-small">Webhook desativado temporariamente (atendimento manual)</p>
+      <div id="pausedList" class="paused-list">
+        <p class="empty-message">Nenhuma conversa pausada</p>
+      </div>
+    </div>
   </div>
 
   <script src="/js/dashboard.js"></script>

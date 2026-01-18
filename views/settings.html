@@ -73,6 +73,16 @@
             </div>
           </fieldset>
 
+          <fieldset>
+            <legend>Atendimento Manual</legend>
+
+            <div class="form-group">
+              <label for="PAUSE_DURATION_HOURS">Tempo de Pausa do Webhook (horas)</label>
+              <input type="number" id="PAUSE_DURATION_HOURS" name="PAUSE_DURATION_HOURS" min="1" max="72" value="4">
+              <small>Quando uma mensagem e enviada pelo celular, o webhook fica pausado por este tempo</small>
+            </div>
+          </fieldset>
+
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">Salvar Configuracoes</button>
           </div>
