@@ -4,6 +4,7 @@ import qrcode from 'qrcode';
 import { config } from '../config/env.js';
 import { sendToWebhook } from '../services/webhook.js';
 import { logger } from '../utils/logger.js';
+import { pauseContact } from '../database/pausedContacts.js';
 
 // WhatsApp connection states
 export const WA_STATUS = {
@@ -87,6 +88,16 @@ client.on('message', async (msg) => {
   sendToWebhook(msg, client).catch((err) => {
     logger.error('WhatsApp', `Failed to send webhook: ${err.message}`);
   });
+});
+
+// Event: Message created (sent from phone or API)
+client.on('message_create', async (msg) => {
+  // Only handle messages sent from the phone (not from API)
+  if (msg.fromMe && msg.id.fromMe) {
+    const chatId = msg.to;
+    logger.log('WhatsApp', `Manual message sent to ${chatId} - pausing webhook for 24h`);
+    pauseContact(chatId);
+  }
 });
 
 // Initialize client

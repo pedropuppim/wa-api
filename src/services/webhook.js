@@ -1,10 +1,18 @@
 import axios from 'axios';
 import { config } from '../config/env.js';
 import { logger } from '../utils/logger.js';
+import { isContactPaused } from '../database/pausedContacts.js';
 
 // Send message to webhook
 export async function sendToWebhook(msg, client) {
   try {
+    // Check if contact is paused (manual takeover)
+    const chatId = msg.from;
+    if (isContactPaused(chatId)) {
+      logger.log('Webhook', `Skipping - contact ${chatId} is paused (manual takeover)`);
+      return;
+    }
+
     // Get contact info
     const contact = await msg.getContact();
 

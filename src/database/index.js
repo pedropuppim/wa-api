@@ -21,4 +21,13 @@ db.exec(`
   )
 `);
 
+// Create paused_contacts table (for manual takeover)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS paused_contacts (
+    chat_id TEXT PRIMARY KEY,
+    paused_at INTEGER NOT NULL,
+    expires_at INTEGER NOT NULL
+  )
+`);
+
 export default db;
