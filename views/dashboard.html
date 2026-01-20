@@ -11,8 +11,8 @@
     <header class="header">
       <h1>WhatsApp API</h1>
       <div class="header-actions">
-        <button id="pausedBtn" class="btn btn-secondary">Conversas Pausadas <span id="pausedCount" class="badge">0</span></button>
-        <a href="/settings" class="btn btn-secondary">Configuracoes</a>
+        <button id="pausedBtn" class="btn btn-secondary">Conversas Pausadas <span id="pausedCount" class="badge hidden"></span></button>
+        <a href="/settings" class="btn btn-secondary">Configurações</a>
         <button id="logoutBtn" class="btn btn-secondary">Sair</button>
       </div>
     </header>
@@ -44,7 +44,7 @@
       </div>
 
       <div class="card info-card">
-        <h2>Informacoes da API</h2>
+        <h2>Informações da API</h2>
 
         <div class="info-item">
           <strong>Endpoint de Status:</strong>
@@ -57,22 +57,43 @@
         </div>
 
         <div class="info-item">
-          <strong>Autenticacao:</strong>
+          <strong>Autenticação:</strong>
           <code>Authorization: Bearer &lt;API_TOKEN&gt;</code>
         </div>
 
-        <div class="info-item">
-          <strong>Exemplo de Payload (Texto):</strong>
-          <pre class="code-block">{
+        <div class="info-item collapsible">
+          <button type="button" class="collapsible-header">
+            <span>Exemplo curl (Texto)</span>
+            <span class="collapsible-icon">&#9660;</span>
+          </button>
+          <div class="collapsible-content">
+            <div class="code-block-wrapper">
+              <pre id="curlText" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/send \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
+  -d '{
   "to": "5511999999999",
   "type": "text",
-  "text": "Ola, tudo bem?"
-}</pre>
+  "text": "Olá, tudo bem?"
+}'</pre>
+              <button type="button" class="btn-copy-curl" data-target="curlText" title="Copiar">
+                <span class="icon-copy">&#128203;</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="info-item">
-          <strong>Exemplo de Payload (Imagem via URL):</strong>
-          <pre class="code-block">{
+        <div class="info-item collapsible">
+          <button type="button" class="collapsible-header">
+            <span>Exemplo curl (Imagem via URL)</span>
+            <span class="collapsible-icon">&#9660;</span>
+          </button>
+          <div class="collapsible-content">
+            <div class="code-block-wrapper">
+              <pre id="curlImage" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/send \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
+  -d '{
   "to": "5511999999999",
   "type": "image",
   "caption": "Legenda opcional",
@@ -80,12 +101,25 @@
     "source": "url",
     "url": "https://exemplo.com/imagem.jpg"
   }
-}</pre>
+}'</pre>
+              <button type="button" class="btn-copy-curl" data-target="curlImage" title="Copiar">
+                <span class="icon-copy">&#128203;</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="info-item">
-          <strong>Exemplo de Payload (Audio):</strong>
-          <pre class="code-block">{
+        <div class="info-item collapsible">
+          <button type="button" class="collapsible-header">
+            <span>Exemplo curl (Áudio)</span>
+            <span class="collapsible-icon">&#9660;</span>
+          </button>
+          <div class="collapsible-content">
+            <div class="code-block-wrapper">
+              <pre id="curlAudio" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/send \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
+  -d '{
   "to": "5511999999999",
   "type": "audio",
   "audio": {
@@ -93,7 +127,12 @@
     "url": "https://exemplo.com/audio.mp3"
   },
   "asPtt": true
-}</pre>
+}'</pre>
+              <button type="button" class="btn-copy-curl" data-target="curlAudio" title="Copiar">
+                <span class="icon-copy">&#128203;</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </main>
