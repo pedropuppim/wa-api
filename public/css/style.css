@@ -60,16 +60,10 @@ body {
   color: #2e7d32;
 }
 
-.api-docs-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+.api-docs-list {
+  display: flex;
+  flex-direction: column;
   gap: 20px;
-}
-
-@media (max-width: 900px) {
-  .api-docs-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .api-endpoint-card {
@@ -109,6 +103,76 @@ body {
   font-size: 14px;
   font-weight: 600;
   color: #333;
+}
+
+.api-summary {
+  color: #666;
+  font-size: 14px;
+  flex: 1;
+}
+
+.api-endpoint-body {
+  border-top: 1px solid #e9ecef;
+  padding-top: 15px;
+}
+
+.api-section {
+  margin-bottom: 20px;
+}
+
+.api-section:last-child {
+  margin-bottom: 0;
+}
+
+.api-section h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.api-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.api-table thead {
+  background: #f1f3f4;
+}
+
+.api-table th,
+.api-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.api-table th {
+  font-weight: 600;
+  color: #333;
+}
+
+.api-table td {
+  color: #555;
+}
+
+.api-table tr:last-child td {
+  border-bottom: none;
+}
+
+.api-table code {
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #e83e8c;
 }
 
 .api-description {
