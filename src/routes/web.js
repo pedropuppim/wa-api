@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { requireAuth } from '../middlewares/auth.js';
-import { getStatus, getQrCode } from '../whatsapp/client.js';
+import { getStatus, getQrCode, getPhoneInfo } from '../whatsapp/client.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const router = Router();
@@ -22,14 +22,23 @@ router.get('/settings', requireAuth, (req, res) => {
   res.type('html').send(html);
 });
 
+// API docs page (requires authentication)
+router.get('/api-docs', requireAuth, (req, res) => {
+  const apiDocsPath = join(__dirname, '../../views/api-docs.html');
+  const html = readFileSync(apiDocsPath, 'utf-8');
+  res.type('html').send(html);
+});
+
 // Dashboard API - get WhatsApp status (for polling)
 router.get('/dashboard/status', requireAuth, (req, res) => {
   const status = getStatus();
   const qrCode = getQrCode();
+  const phoneInfo = getPhoneInfo();
 
   res.json({
     ...status,
     qrCode,
+    phoneInfo,
   });
 });
 

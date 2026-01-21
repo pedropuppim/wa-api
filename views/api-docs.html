@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentação da API - WhatsApp API</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container container-wide">
+    <header class="header">
+      <h1>WhatsApp API</h1>
+      <div class="header-actions">
+        <a href="/" class="btn btn-secondary">Voltar</a>
+        <button id="logoutBtn" class="btn btn-secondary">Sair</button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <div class="card">
+        <h2>Documentação da API</h2>
+
+        <div class="api-auth-info">
+          <strong>Autenticação:</strong>
+          <code>Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span></code>
+        </div>
+
+        <div class="api-docs-grid">
+          <!-- Status -->
+          <div class="api-endpoint-card">
+            <div class="api-endpoint-header">
+              <span class="api-method get">GET</span>
+              <span class="api-path">/api/status</span>
+            </div>
+            <p class="api-description">Retorna o status da conexão do WhatsApp</p>
+            <div class="api-response">
+              <strong>Resposta:</strong>
+              <pre class="code-block code-block-small">{"status": "READY", "qrAvailable": false}</pre>
+            </div>
+          </div>
+
+          <!-- Enviar Texto -->
+          <div class="api-endpoint-card">
+            <div class="api-endpoint-header">
+              <span class="api-method post">POST</span>
+              <span class="api-path">/api/send</span>
+            </div>
+            <p class="api-description">Envia uma mensagem de texto</p>
+            <div class="api-params">
+              <strong>Parâmetros:</strong>
+              <ul>
+                <li><code>to</code> - Número do destinatário</li>
+                <li><code>type</code> - "text"</li>
+                <li><code>text</code> - Conteúdo da mensagem</li>
+              </ul>
+            </div>
+            <div class="collapsible">
+              <button type="button" class="collapsible-header">
+                <span>Exemplo curl</span>
+                <span class="collapsible-icon">&#9660;</span>
+              </button>
+              <div class="collapsible-content">
+                <div class="code-block-wrapper">
+                  <pre id="curlText" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/send \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
+  -d '{
+  "to": "5511999999999",
+  "type": "text",
+  "text": "Olá, tudo bem?"
+}'</pre>
+                  <button type="button" class="btn-copy-curl" data-target="curlText" title="Copiar">
+                    <span class="icon-copy">&#128203;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enviar Imagem -->
+          <div class="api-endpoint-card">
+            <div class="api-endpoint-header">
+              <span class="api-method post">POST</span>
+              <span class="api-path">/api/send</span>
+            </div>
+            <p class="api-description">Envia uma imagem via URL</p>
+            <div class="api-params">
+              <strong>Parâmetros:</strong>
+              <ul>
+                <li><code>to</code> - Número do destinatário</li>
+                <li><code>type</code> - "image"</li>
+                <li><code>caption</code> - Legenda (opcional)</li>
+                <li><code>image.source</code> - "url" ou "base64"</li>
+                <li><code>image.url</code> - URL da imagem</li>
+              </ul>
+            </div>
+            <div class="collapsible">
+              <button type="button" class="collapsible-header">
+                <span>Exemplo curl</span>
+                <span class="collapsible-icon">&#9660;</span>
+              </button>
+              <div class="collapsible-content">
+                <div class="code-block-wrapper">
+                  <pre id="curlImage" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/send \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
+  -d '{
+  "to": "5511999999999",
+  "type": "image",
+  "caption": "Legenda opcional",
+  "image": {
+    "source": "url",
+    "url": "https://exemplo.com/imagem.jpg"
+  }
+}'</pre>
+                  <button type="button" class="btn-copy-curl" data-target="curlImage" title="Copiar">
+                    <span class="icon-copy">&#128203;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enviar Áudio -->
+          <div class="api-endpoint-card">
+            <div class="api-endpoint-header">
+              <span class="api-method post">POST</span>
+              <span class="api-path">/api/send</span>
+            </div>
+            <p class="api-description">Envia um áudio (como mensagem de voz)</p>
+            <div class="api-params">
+              <strong>Parâmetros:</strong>
+              <ul>
+                <li><code>to</code> - Número do destinatário</li>
+                <li><code>type</code> - "audio"</li>
+                <li><code>audio.source</code> - "url" ou "base64"</li>
+                <li><code>audio.url</code> - URL do áudio</li>
+                <li><code>asPtt</code> - true para mensagem de voz</li>
+              </ul>
+            </div>
+            <div class="collapsible">
+              <button type="button" class="collapsible-header">
+                <span>Exemplo curl</span>
+                <span class="collapsible-icon">&#9660;</span>
+              </button>
+              <div class="collapsible-content">
+                <div class="code-block-wrapper">
+                  <pre id="curlAudio" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/send \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
+  -d '{
+  "to": "5511999999999",
+  "type": "audio",
+  "audio": {
+    "source": "url",
+    "url": "https://exemplo.com/audio.mp3"
+  },
+  "asPtt": true
+}'</pre>
+                  <button type="button" class="btn-copy-curl" data-target="curlAudio" title="Copiar">
+                    <span class="icon-copy">&#128203;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pausar Contato -->
+          <div class="api-endpoint-card">
+            <div class="api-endpoint-header">
+              <span class="api-method post">POST</span>
+              <span class="api-path">/api/pause</span>
+            </div>
+            <p class="api-description">Pausa o webhook para um contato</p>
+            <div class="api-params">
+              <strong>Parâmetros:</strong>
+              <ul>
+                <li><code>phone</code> - Número do contato</li>
+              </ul>
+            </div>
+            <div class="collapsible">
+              <button type="button" class="collapsible-header">
+                <span>Exemplo curl</span>
+                <span class="collapsible-icon">&#9660;</span>
+              </button>
+              <div class="collapsible-content">
+                <div class="code-block-wrapper">
+                  <pre id="curlPause" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/pause \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
+  -d '{
+  "phone": "5511999999999"
+}'</pre>
+                  <button type="button" class="btn-copy-curl" data-target="curlPause" title="Copiar">
+                    <span class="icon-copy">&#128203;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Retomar Contato -->
+          <div class="api-endpoint-card">
+            <div class="api-endpoint-header">
+              <span class="api-method post">POST</span>
+              <span class="api-path">/api/resume</span>
+            </div>
+            <p class="api-description">Retoma o webhook para um contato pausado</p>
+            <div class="api-params">
+              <strong>Parâmetros:</strong>
+              <ul>
+                <li><code>phone</code> - Número do contato</li>
+              </ul>
+            </div>
+            <div class="collapsible">
+              <button type="button" class="collapsible-header">
+                <span>Exemplo curl</span>
+                <span class="collapsible-icon">&#9660;</span>
+              </button>
+              <div class="collapsible-content">
+                <div class="code-block-wrapper">
+                  <pre id="curlResume" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/resume \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
+  -d '{
+  "phone": "5511999999999"
+}'</pre>
+                  <button type="button" class="btn-copy-curl" data-target="curlResume" title="Copiar">
+                    <span class="icon-copy">&#128203;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/api-docs.js"></script>
+</body>
+</html>

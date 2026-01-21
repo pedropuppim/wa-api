@@ -7,10 +7,11 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <div class="container">
+  <div class="container container-wide">
     <header class="header">
       <h1>WhatsApp API</h1>
       <div class="header-actions">
+        <a href="/api-docs" class="btn btn-secondary">Documentação da API</a>
         <button id="pausedBtn" class="btn btn-secondary">Conversas Pausadas <span id="pausedCount" class="badge hidden"></span></button>
         <a href="/settings" class="btn btn-secondary">Configurações</a>
         <button id="logoutBtn" class="btn btn-secondary">Sair</button>
@@ -19,7 +20,7 @@
 
     <main class="dashboard">
       <div class="card status-card">
-        <h2>Status da Conexao</h2>
+        <h2>Status da Conexão</h2>
 
         <div class="status-indicator">
           <span id="statusDot" class="status-dot"></span>
@@ -34,105 +35,19 @@
         </div>
 
         <div id="connectedMessage" class="success-message" style="display: none;">
-          <p>WhatsApp conectado e pronto para uso!</p>
+          <div class="connected-header">
+            <span class="connected-icon">&#9989;</span>
+            <span>WhatsApp conectado</span>
+          </div>
+          <div id="phoneInfo" class="phone-info" style="display: none;">
+            <div class="phone-info-number" id="phoneNumber">-</div>
+            <div class="phone-info-name" id="phoneName">-</div>
+          </div>
         </div>
 
         <div class="actions">
           <button id="regenerateQrBtn" class="btn btn-primary">Gerar Novo QR Code</button>
-          <button id="restartBtn" class="btn btn-warning">Reiniciar Sessao</button>
-        </div>
-      </div>
-
-      <div class="card info-card">
-        <h2>Informações da API</h2>
-
-        <div class="info-item">
-          <strong>Endpoint de Status:</strong>
-          <code>GET /api/status</code>
-        </div>
-
-        <div class="info-item">
-          <strong>Endpoint de Envio:</strong>
-          <code>POST /api/send</code>
-        </div>
-
-        <div class="info-item">
-          <strong>Autenticação:</strong>
-          <code>Authorization: Bearer &lt;API_TOKEN&gt;</code>
-        </div>
-
-        <div class="info-item collapsible">
-          <button type="button" class="collapsible-header">
-            <span>Exemplo curl (Texto)</span>
-            <span class="collapsible-icon">&#9660;</span>
-          </button>
-          <div class="collapsible-content">
-            <div class="code-block-wrapper">
-              <pre id="curlText" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/send \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
-  -d '{
-  "to": "5511999999999",
-  "type": "text",
-  "text": "Olá, tudo bem?"
-}'</pre>
-              <button type="button" class="btn-copy-curl" data-target="curlText" title="Copiar">
-                <span class="icon-copy">&#128203;</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="info-item collapsible">
-          <button type="button" class="collapsible-header">
-            <span>Exemplo curl (Imagem via URL)</span>
-            <span class="collapsible-icon">&#9660;</span>
-          </button>
-          <div class="collapsible-content">
-            <div class="code-block-wrapper">
-              <pre id="curlImage" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/send \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
-  -d '{
-  "to": "5511999999999",
-  "type": "image",
-  "caption": "Legenda opcional",
-  "image": {
-    "source": "url",
-    "url": "https://exemplo.com/imagem.jpg"
-  }
-}'</pre>
-              <button type="button" class="btn-copy-curl" data-target="curlImage" title="Copiar">
-                <span class="icon-copy">&#128203;</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="info-item collapsible">
-          <button type="button" class="collapsible-header">
-            <span>Exemplo curl (Áudio)</span>
-            <span class="collapsible-icon">&#9660;</span>
-          </button>
-          <div class="collapsible-content">
-            <div class="code-block-wrapper">
-              <pre id="curlAudio" class="code-block">curl -X POST <span class="curl-base-url"></span>/api/send \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <span class="api-token-placeholder">&lt;API_TOKEN&gt;</span>" \
-  -d '{
-  "to": "5511999999999",
-  "type": "audio",
-  "audio": {
-    "source": "url",
-    "url": "https://exemplo.com/audio.mp3"
-  },
-  "asPtt": true
-}'</pre>
-              <button type="button" class="btn-copy-curl" data-target="curlAudio" title="Copiar">
-                <span class="icon-copy">&#128203;</span>
-              </button>
-            </div>
-          </div>
+          <button id="restartBtn" class="btn btn-warning">Reiniciar Sessão</button>
         </div>
       </div>
     </main>

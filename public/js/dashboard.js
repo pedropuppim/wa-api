@@ -7,6 +7,9 @@
   const qrContainer = document.getElementById('qrContainer');
   const qrCode = document.getElementById('qrCode');
   const connectedMessage = document.getElementById('connectedMessage');
+  const phoneInfoEl = document.getElementById('phoneInfo');
+  const phoneNumberEl = document.getElementById('phoneNumber');
+  const phoneNameEl = document.getElementById('phoneName');
   const restartBtn = document.getElementById('restartBtn');
   const regenerateQrBtn = document.getElementById('regenerateQrBtn');
   const logoutBtn = document.getElementById('logoutBtn');
@@ -73,17 +76,39 @@
       qrContainer.style.display = 'none';
     }
 
-    // Show/hide connected message
+    // Show/hide connected message and phone info
     if (status === 'READY') {
       connectedMessage.style.display = 'block';
+
+      // Show phone info if available
+      if (data.phoneInfo) {
+        phoneNumberEl.textContent = formatPhoneNumber(data.phoneInfo.number) || '-';
+        phoneNameEl.textContent = data.phoneInfo.pushname || '';
+        phoneInfoEl.style.display = 'block';
+      } else {
+        phoneInfoEl.style.display = 'none';
+      }
     } else {
       connectedMessage.style.display = 'none';
+      phoneInfoEl.style.display = 'none';
     }
+  }
+
+  // Format phone number for display
+  function formatPhoneNumber(number) {
+    if (!number) return null;
+    const cleaned = number.replace(/\D/g, '');
+    if (cleaned.length === 13) {
+      return `+${cleaned.slice(0, 2)} ${cleaned.slice(2, 4)} ${cleaned.slice(4, 9)}-${cleaned.slice(9)}`;
+    } else if (cleaned.length === 12) {
+      return `+${cleaned.slice(0, 2)} ${cleaned.slice(2, 4)} ${cleaned.slice(4, 8)}-${cleaned.slice(8)}`;
+    }
+    return `+${cleaned}`;
   }
 
   // Restart WhatsApp session
   async function restartSession() {
-    if (!confirm('Tem certeza que deseja reiniciar a sessao do WhatsApp?')) {
+    if (!confirm('Tem certeza que deseja reiniciar a sessão do WhatsApp?')) {
       return;
     }
 
@@ -93,9 +118,7 @@
     try {
       const response = await fetch('/dashboard/restart', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.status === 401) {
@@ -110,16 +133,16 @@
       }
     } catch (err) {
       console.error('Error restarting session:', err);
-      alert('Erro ao reiniciar sessao');
+      alert('Erro ao reiniciar sessão');
     } finally {
       restartBtn.disabled = false;
-      restartBtn.textContent = 'Reiniciar Sessao';
+      restartBtn.textContent = 'Reiniciar Sessão';
     }
   }
 
   // Regenerate QR code
   async function regenerateQr() {
-    if (!confirm('Isso ira desconectar a sessao atual e gerar um novo QR Code. Continuar?')) {
+    if (!confirm('Isso irá desconectar a sessão atual e gerar um novo QR Code. Continuar?')) {
       return;
     }
 
@@ -129,9 +152,7 @@
     try {
       const response = await fetch('/dashboard/regenerate-qr', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.status === 401) {
@@ -156,18 +177,14 @@
   // Logout
   async function logout() {
     try {
-      const response = await fetch('/logout', {
+      await fetch('/logout', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
-
-      window.location.href = '/login';
     } catch (err) {
       console.error('Error logging out:', err);
-      window.location.href = '/login';
     }
+    window.location.href = '/login';
   }
 
   // Fetch paused contacts
@@ -175,13 +192,8 @@
     try {
       const response = await fetch('/dashboard/paused-contacts');
 
-      if (response.status === 401) {
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch paused contacts');
-      }
+      if (response.status === 401) return;
+      if (!response.ok) throw new Error('Failed to fetch paused contacts');
 
       const data = await response.json();
       renderPausedContacts(data.contacts);
@@ -202,13 +214,12 @@
     }
   }
 
-  // Open modal
+  // Open/Close modal
   function openPausedModal() {
     fetchPausedContacts();
     pausedModal.style.display = 'flex';
   }
 
-  // Close modal
   function closePausedModal() {
     pausedModal.style.display = 'none';
   }
@@ -242,7 +253,6 @@
 
     pausedList.innerHTML = html;
 
-    // Add event listeners
     pausedList.querySelectorAll('.paused-item').forEach((item) => {
       const chatId = item.dataset.chatId;
       const datetimeInput = item.querySelector('.paused-datetime');
@@ -254,7 +264,6 @@
     });
   }
 
-  // Format datetime for input
   function formatDatetimeLocal(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -264,29 +273,23 @@
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
-  // Format remaining time
   function formatRemaining(ms) {
     if (ms <= 0) return 'Expirado';
 
     const hours = Math.floor(ms / (1000 * 60 * 60));
     const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
 
-    if (hours > 0) {
-      return `${hours}h ${minutes}min`;
-    }
+    if (hours > 0) return `${hours}h ${minutes}min`;
     return `${minutes}min`;
   }
 
-  // Update pause expiration
   async function updatePause(chatId, datetime) {
     try {
       const expiresAt = new Date(datetime).toISOString();
 
       const response = await fetch(`/dashboard/paused-contacts/${encodeURIComponent(chatId)}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ expiresAt }),
       });
 
@@ -308,11 +311,8 @@
     }
   }
 
-  // Remove pause (resume webhook)
   async function removePause(chatId) {
-    if (!confirm('Remover pausa e reativar webhook para este contato?')) {
-      return;
-    }
+    if (!confirm('Remover pausa e reativar webhook para este contato?')) return;
 
     try {
       const response = await fetch(`/dashboard/paused-contacts/${encodeURIComponent(chatId)}`, {
@@ -337,134 +337,35 @@
     }
   }
 
-  // Fetch API token and update curl examples
-  async function fetchApiToken() {
-    try {
-      const response = await fetch('/dashboard/settings');
-
-      if (response.status === 401) {
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch settings');
-      }
-
-      const data = await response.json();
-
-      if (data.ok && data.settings.API_TOKEN) {
-        const token = data.settings.API_TOKEN;
-        // Update all API token placeholders
-        document.querySelectorAll('.api-token-placeholder').forEach((el) => {
-          el.textContent = token;
-        });
-      }
-
-      // Update base URL in curl examples
-      const baseUrl = window.location.origin;
-      document.querySelectorAll('.curl-base-url').forEach((el) => {
-        el.textContent = baseUrl;
-      });
-    } catch (err) {
-      console.error('Error fetching API token:', err);
-    }
-  }
-
-  // Copy curl to clipboard
-  async function copyCurl(targetId, btn) {
-    const pre = document.getElementById(targetId);
-    if (!pre) return;
-
-    const text = pre.textContent;
-
-    try {
-      await navigator.clipboard.writeText(text);
-      btn.classList.add('copied');
-
-      setTimeout(() => {
-        btn.classList.remove('copied');
-      }, 2000);
-    } catch (err) {
-      // Fallback for older browsers
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-
-      btn.classList.add('copied');
-      setTimeout(() => {
-        btn.classList.remove('copied');
-      }, 2000);
-    }
-  }
-
-  // Setup copy buttons for curl examples
-  function setupCurlCopyButtons() {
-    document.querySelectorAll('.btn-copy-curl').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const target = btn.getAttribute('data-target');
-        copyCurl(target, btn);
-      });
-    });
-  }
-
-  // Setup collapsible sections
-  function setupCollapsibles() {
-    document.querySelectorAll('.collapsible-header').forEach((header) => {
-      header.addEventListener('click', () => {
-        const collapsible = header.closest('.collapsible');
-        collapsible.classList.toggle('open');
-      });
-    });
-  }
-
   // Initialize
   function init() {
-    // Event listeners
     restartBtn.addEventListener('click', restartSession);
     regenerateQrBtn.addEventListener('click', regenerateQr);
     logoutBtn.addEventListener('click', logout);
     pausedBtn.addEventListener('click', openPausedModal);
     closeModalBtn.addEventListener('click', closePausedModal);
 
-    // Close modal when clicking outside
     pausedModal.addEventListener('click', (e) => {
-      if (e.target === pausedModal) {
-        closePausedModal();
-      }
+      if (e.target === pausedModal) closePausedModal();
     });
 
-    // Close modal with Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && pausedModal.style.display === 'flex') {
         closePausedModal();
       }
     });
 
-    // Setup curl copy buttons and collapsibles
-    setupCurlCopyButtons();
-    setupCollapsibles();
-
-    // Initial fetch
     fetchStatus();
     fetchPausedContacts();
-    fetchApiToken();
 
-    // Start polling every 3 seconds for status, every 30 seconds for paused contacts count
     pollInterval = setInterval(fetchStatus, 3000);
     setInterval(fetchPausedContacts, 30000);
   }
 
-  // Cleanup on page unload
   window.addEventListener('beforeunload', function () {
-    if (pollInterval) {
-      clearInterval(pollInterval);
-    }
+    if (pollInterval) clearInterval(pollInterval);
   });
 
-  // Start when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

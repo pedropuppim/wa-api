@@ -46,6 +46,26 @@ export async function sendToWebhook(msg, client) {
 
     // Get contact info
     const contact = await msg.getContact();
+    const phoneNumber = contact.number || contact.id?.user || null;
+
+    // Log with actual phone number when available
+    if (phoneNumber && chatId.includes('@lid')) {
+      logger.log('Webhook', `LID resolved: ${chatId} -> ${phoneNumber}`);
+    }
+
+    // Extract phone number - handle LID format (@lid) and regular format (@c.us)
+    const extractNumber = () => {
+      // Try to get from contact.number first (most reliable)
+      if (contact.number) {
+        return contact.number;
+      }
+      // Try contact.id.user
+      if (contact.id?.user) {
+        return contact.id.user;
+      }
+      // Fallback: extract from msg.from removing any suffix
+      return msg.from.replace(/@.*$/, '');
+    };
 
     // Build base payload
     const payload = {
@@ -65,7 +85,7 @@ export async function sendToWebhook(msg, client) {
       contact: {
         name: contact.name || contact.pushname || 'Unknown',
         pushname: contact.pushname || '',
-        number: msg.from.replace('@c.us', '').replace('@g.us', ''),
+        number: extractNumber(),
       },
     };
 

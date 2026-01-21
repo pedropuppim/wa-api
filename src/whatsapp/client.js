@@ -100,8 +100,19 @@ client.on('message_create', async (msg) => {
 
   const chatId = msg.to;
 
-  // Check if this message was sent via our API
-  if (isApiSending(chatId)) {
+  // Try to get the actual phone number (handles LID format)
+  let phoneNumber = null;
+  try {
+    const chat = await msg.getChat();
+    const contact = chat.contact || await client.getContactById(chatId);
+    phoneNumber = contact?.number || contact?.id?.user || null;
+  } catch (err) {
+    // Fallback: extract number from chatId
+    phoneNumber = chatId.replace(/@.*$/, '');
+  }
+
+  // Check if this message was sent via our API (check both chatId and phone number)
+  if (isApiSending(chatId) || (phoneNumber && isApiSending(`${phoneNumber}@c.us`))) {
     logger.log('WhatsApp', `API message sent to ${chatId} - not pausing`);
     return;
   }
@@ -172,6 +183,19 @@ export function getStatus() {
     status: currentStatus,
     qrAvailable: qrCodeDataUrl !== null,
     lastError,
+  };
+}
+
+// Get connected phone info
+export function getPhoneInfo() {
+  if (currentStatus !== WA_STATUS.READY || !client.info) {
+    return null;
+  }
+
+  const info = client.info;
+  return {
+    number: info.wid?.user || info.me?.user || null,
+    pushname: info.pushname || null,
   };
 }
 
