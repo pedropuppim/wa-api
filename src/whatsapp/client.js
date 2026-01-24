@@ -243,7 +243,7 @@ function extractMessageId(result) {
 export async function sendTextMessage(to, text) {
   const chatId = await validateNumber(to);
   markApiSending(chatId); // Mark BEFORE sending
-  const result = await client.sendMessage(chatId, text);
+  const result = await client.sendMessage(chatId, text, { sendSeen: false });
   return {
     id: extractMessageId(result),
     to: chatId,
@@ -263,7 +263,7 @@ export async function sendImageMessage(to, imageData, caption) {
   }
 
   markApiSending(chatId); // Mark BEFORE sending
-  const result = await client.sendMessage(chatId, media, { caption });
+  const result = await client.sendMessage(chatId, media, { caption, sendSeen: false });
   return {
     id: extractMessageId(result),
     to: chatId,
@@ -283,7 +283,7 @@ export async function sendAudioMessage(to, audioData, asPtt = true) {
   }
 
   markApiSending(chatId); // Mark BEFORE sending
-  const result = await client.sendMessage(chatId, media, { sendAudioAsVoice: asPtt });
+  const result = await client.sendMessage(chatId, media, { sendAudioAsVoice: asPtt, sendSeen: false });
   return {
     id: extractMessageId(result),
     to: chatId,

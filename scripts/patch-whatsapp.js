@@ -13,14 +13,14 @@ const utilsPath = join(__dirname, '../node_modules/whatsapp-web.js/src/util/Inje
 try {
   let content = readFileSync(utilsPath, 'utf-8');
 
-  if (content.includes('sendSeen.sendSeen')) {
+  if (content.includes('SendSeen.sendSeen')) {
     content = content.replace(
       'await window.Store.SendSeen.sendSeen(chat);',
       'await window.Store.SendSeen.markSeen(chat);'
     );
     writeFileSync(utilsPath, content);
     console.log('[Patch] whatsapp-web.js patched successfully (sendSeen -> markSeen)');
-  } else if (content.includes('sendSeen.markSeen')) {
+  } else if (content.includes('SendSeen.markSeen')) {
     console.log('[Patch] whatsapp-web.js already patched');
   } else {
     console.warn('[Patch] Could not find sendSeen method to patch');
