@@ -1,0 +1,35 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Usa o runner local 'pedro'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci  # Usa npm ci para instalação limpa e rápida
+
+      - name: Run postinstall script
+        run: npm run postinstall
+
+      - name: Restart production server
+        run: npm run prod:restart
+
+      - name: Check deployment status
+        run: |
+          sleep 5
+          pm2 status wa-api
+          pm2 logs wa-api --lines 10 --nostream
