@@ -12,7 +12,7 @@
       <h1>WhatsApp API</h1>
       <div class="header-actions">
         <a href="/api-docs" class="btn btn-secondary">Documentação da API</a>
-        <button id="pausedBtn" class="btn btn-secondary">Conversas Pausadas <span id="pausedCount" class="badge hidden"></span></button>
+        <a href="/paused-contacts" class="btn btn-secondary">Conversas Pausadas <span id="pausedCount" class="badge hidden"></span></a>
         <a href="/settings" class="btn btn-secondary">Configurações</a>
         <button id="logoutBtn" class="btn btn-secondary">Sair</button>
       </div>
@@ -51,20 +51,6 @@
         </div>
       </div>
     </main>
-  </div>
-
-  <!-- Modal Conversas Pausadas -->
-  <div id="pausedModal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Conversas Pausadas</h2>
-        <button id="closeModalBtn" class="btn-close">&times;</button>
-      </div>
-      <p class="subtitle-small">Webhook desativado temporariamente (atendimento manual)</p>
-      <div id="pausedList" class="paused-list">
-        <p class="empty-message">Nenhuma conversa pausada</p>
-      </div>
-    </div>
   </div>
 
   <script src="/js/dashboard.js"></script>

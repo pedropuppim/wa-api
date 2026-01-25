@@ -13,11 +13,7 @@
   const restartBtn = document.getElementById('restartBtn');
   const regenerateQrBtn = document.getElementById('regenerateQrBtn');
   const logoutBtn = document.getElementById('logoutBtn');
-  const pausedList = document.getElementById('pausedList');
-  const pausedBtn = document.getElementById('pausedBtn');
   const pausedCount = document.getElementById('pausedCount');
-  const pausedModal = document.getElementById('pausedModal');
-  const closeModalBtn = document.getElementById('closeModalBtn');
 
   const STATUS_LABELS = {
     DISCONNECTED: 'Desconectado',
@@ -187,22 +183,6 @@
     window.location.href = '/login';
   }
 
-  // Fetch paused contacts
-  async function fetchPausedContacts() {
-    try {
-      const response = await fetch('/dashboard/paused-contacts');
-
-      if (response.status === 401) return;
-      if (!response.ok) throw new Error('Failed to fetch paused contacts');
-
-      const data = await response.json();
-      renderPausedContacts(data.contacts);
-      updatePausedBadge(data.contacts.length);
-    } catch (err) {
-      console.error('Error fetching paused contacts:', err);
-    }
-  }
-
   // Update badge count
   function updatePausedBadge(count) {
     if (count > 0) {
@@ -214,126 +194,18 @@
     }
   }
 
-  // Open/Close modal
-  function openPausedModal() {
-    fetchPausedContacts();
-    pausedModal.style.display = 'flex';
-  }
-
-  function closePausedModal() {
-    pausedModal.style.display = 'none';
-  }
-
-  // Render paused contacts list
-  function renderPausedContacts(contacts) {
-    if (!contacts || contacts.length === 0) {
-      pausedList.innerHTML = '<p class="empty-message">Nenhuma conversa pausada</p>';
-      return;
-    }
-
-    const html = contacts.map((contact) => {
-      const expiresAt = new Date(contact.expiresAt);
-      const localDatetime = formatDatetimeLocal(expiresAt);
-      const remainingText = formatRemaining(contact.remainingMs);
-
-      return `
-        <div class="paused-item" data-chat-id="${contact.chatId}">
-          <div class="paused-info">
-            <div class="paused-number">${contact.number}${contact.isGroup ? ' (Grupo)' : ''}</div>
-            <div class="paused-time">Expira em: ${remainingText}</div>
-          </div>
-          <div class="paused-actions">
-            <input type="datetime-local" class="paused-datetime" value="${localDatetime}">
-            <button class="btn btn-small btn-primary btn-update-pause">Salvar</button>
-            <button class="btn btn-small btn-danger btn-remove-pause">Remover</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    pausedList.innerHTML = html;
-
-    pausedList.querySelectorAll('.paused-item').forEach((item) => {
-      const chatId = item.dataset.chatId;
-      const datetimeInput = item.querySelector('.paused-datetime');
-      const updateBtn = item.querySelector('.btn-update-pause');
-      const removeBtn = item.querySelector('.btn-remove-pause');
-
-      updateBtn.addEventListener('click', () => updatePause(chatId, datetimeInput.value));
-      removeBtn.addEventListener('click', () => removePause(chatId));
-    });
-  }
-
-  function formatDatetimeLocal(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
-
-  function formatRemaining(ms) {
-    if (ms <= 0) return 'Expirado';
-
-    const hours = Math.floor(ms / (1000 * 60 * 60));
-    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (hours > 0) return `${hours}h ${minutes}min`;
-    return `${minutes}min`;
-  }
-
-  async function updatePause(chatId, datetime) {
+  // Fetch paused contacts count for badge
+  async function fetchPausedContacts() {
     try {
-      const expiresAt = new Date(datetime).toISOString();
+      const response = await fetch('/dashboard/paused-contacts');
 
-      const response = await fetch(`/dashboard/paused-contacts/${encodeURIComponent(chatId)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ expiresAt }),
-      });
-
-      if (response.status === 401) {
-        window.location.href = '/login';
-        return;
-      }
+      if (response.status === 401) return;
+      if (!response.ok) throw new Error('Failed to fetch paused contacts');
 
       const data = await response.json();
-
-      if (data.ok) {
-        fetchPausedContacts();
-      } else {
-        alert('Erro ao atualizar: ' + (data.error || 'Unknown error'));
-      }
+      updatePausedBadge(data.contacts.length);
     } catch (err) {
-      console.error('Error updating pause:', err);
-      alert('Erro ao atualizar pausa');
-    }
-  }
-
-  async function removePause(chatId) {
-    if (!confirm('Remover pausa e reativar webhook para este contato?')) return;
-
-    try {
-      const response = await fetch(`/dashboard/paused-contacts/${encodeURIComponent(chatId)}`, {
-        method: 'DELETE',
-      });
-
-      if (response.status === 401) {
-        window.location.href = '/login';
-        return;
-      }
-
-      const data = await response.json();
-
-      if (data.ok) {
-        fetchPausedContacts();
-      } else {
-        alert('Erro ao remover: ' + (data.error || 'Unknown error'));
-      }
-    } catch (err) {
-      console.error('Error removing pause:', err);
-      alert('Erro ao remover pausa');
+      console.error('Error fetching paused contacts:', err);
     }
   }
 
@@ -342,18 +214,6 @@
     restartBtn.addEventListener('click', restartSession);
     regenerateQrBtn.addEventListener('click', regenerateQr);
     logoutBtn.addEventListener('click', logout);
-    pausedBtn.addEventListener('click', openPausedModal);
-    closeModalBtn.addEventListener('click', closePausedModal);
-
-    pausedModal.addEventListener('click', (e) => {
-      if (e.target === pausedModal) closePausedModal();
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && pausedModal.style.display === 'flex') {
-        closePausedModal();
-      }
-    });
 
     fetchStatus();
     fetchPausedContacts();

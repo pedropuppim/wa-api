@@ -22,6 +22,20 @@ router.get('/settings', requireAuth, (req, res) => {
   res.type('html').send(html);
 });
 
+// Settings page (requires authentication)
+router.get('/settings', requireAuth, (req, res) => {
+  const settingsPath = join(__dirname, '../../views/settings.html');
+  const html = readFileSync(settingsPath, 'utf-8');
+  res.type('html').send(html);
+});
+
+// Paused contacts page (requires authentication)
+router.get('/paused-contacts', requireAuth, (req, res) => {
+  const pausedContactsPath = join(__dirname, '../../views/paused-contacts.html');
+  const html = readFileSync(pausedContactsPath, 'utf-8');
+  res.type('html').send(html);
+});
+
 // API docs page (requires authentication)
 router.get('/api-docs', requireAuth, (req, res) => {
   const apiDocsPath = join(__dirname, '../../views/api-docs.html');

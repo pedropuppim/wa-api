@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversas Pausadas - WhatsApp API</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container container-wide">
+    <header class="header">
+      <h1>WhatsApp API</h1>
+      <div class="header-actions">
+        <a href="/" class="btn btn-secondary">Voltar</a>
+        <button id="logoutBtn" class="btn btn-secondary">Sair</button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <div class="card">
+        <h2>Conversas Pausadas</h2>
+        <p class="subtitle-small">Webhook desativado temporariamente (atendimento manual)</p>
+
+        <div id="message" class="message" style="display: none;"></div>
+
+        <div id="pausedList" class="paused-list">
+          <p class="empty-message">Carregando conversas pausadas...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/paused-contacts.js"></script>
+</body>
+</html>
